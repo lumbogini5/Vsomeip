@@ -1,0 +1,316 @@
+/* Copyright (C) 2014 BMW Group
+ * Author: Manfred Bathelt (manfred.bathelt@bmw.de)
+ * Author: Juergen Gehring (juergen.gehring@bmw.de)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+package commonapi.WiFiService
+
+interface WiFiStaMode {
+
+    version{ major 1 minor 2 }
+
+    method vdSwitchStaModeOn {
+ 
+      error ReturnEnum_s 
+    }
+
+    method vdSwitchStaModeOff {
+ 
+      error ReturnEnum_s 
+    }
+
+    method vdScanAp {
+
+      out {
+      ScanApInfo_s  [] stScanApList_a
+         } 
+      error ReturnEnum_s
+    }
+
+    method vdConnectToAp {
+
+      in { 
+        ConnectApInfo_s stApInfo
+        IpConfig_s stIpConfig
+        
+      }
+      out {
+        Int64 sdConnectionId
+         } 
+      error ReturnEnum_s
+    }
+
+    method vdDisconnectToAp {
+
+      error ReturnEnum_s
+    }
+
+    method vdSwitchFastRoamOn {
+
+      error ReturnEnum_s
+    }
+
+    method vdSwitchFastRoamOff {
+
+      error ReturnEnum_s
+    }
+
+     method vdGetRegisteredAPList {
+
+      out {
+          RegisteredApInfo_s [] stRegisteredApList_a
+         } 
+      error ReturnEnum_s
+    }
+
+     method vdDeleteRegisteredAP {
+ 
+     in{
+        String chSsid_a
+
+     }
+      error ReturnEnum_s
+    }
+
+    method vdDeleteAllAP {
+  
+      error ReturnEnum_s
+    }
+
+    broadcast ApConnectionResult {
+        out {
+            Int64 sdConnectionId
+            ConnectReturnEnum_s stRet
+        }
+    }
+
+    broadcast FullApList {
+        out {
+            
+        }
+    }
+
+    broadcast ConectionStatus {
+        out {
+            ConnectStatusInfo_s stConnectStatusInfo
+        }
+    }
+
+     broadcast FastRoaming {
+        out {
+            String chEssid_a
+            String chCurBssid_a
+            String chPreBssid_a
+        }
+    }
+
+    enumeration ReturnEnum_s {
+        VSOMEIP_OK
+        VSOMEIP_ERR_WRONG_STATE
+        VSOMEIP_ERR_WRONG_OPERATION
+        VSOMEIP_ERR_OTHER
+        VSOMEIP_ERR_INVALID_ARGUMENT
+    }
+
+    enumeration SecurityTypeEnum_s {
+      OPEN 
+      WEP 
+      WPA2_PERSONAL
+      WPA2_ENTERPRISE
+      WPA3_PERSONAL
+      WPA3_ENTERPRISE
+    }
+
+    enumeration IpAddrTypeEnum_s {
+      STATIC
+      DHCP 
+    }
+
+    enumeration ConnectReturnEnum_s {
+      AP_CONNECT_OK
+      AP_CONNECT_WITHOUT_IP
+      AP_CONNECT_FAIL
+    }
+
+    enumeration WiFiFreqEnum_s {
+      FREQ_2_4 =2400,
+      FREQ_5_0 =5000,
+      FREQ_6_0 =6000
+    }
+
+    enumeration WiFiStaStatusEnum_s {
+      ON
+      OFF
+    }
+
+
+    struct ScanApInfo_s {
+        String chMacAddr_a
+        UInt32 uwFreq
+        Int16 shRssi
+        SecurityTypeEnum_s stSecurityTypeEnum
+        String chSsid_a
+    }
+
+    struct ConnectApInfo_s {
+        String chSsid_a
+        String chPassword_a
+        String chIdentity_a
+        SecurityTypeEnum_s stSecurityTypeEnum     
+    }
+
+    struct StaticIpAddrInfo_s {
+        UInt8 [] ubIpv4Addr_a
+        UInt8 [] ubNetMask_a
+        UInt8 [] ubDefGateway_a
+    }
+
+    struct IpConfig_s {
+        IpAddrTypeEnum_s stIpTypeEnum
+        StaticIpAddrInfo_s stStaticIpInfo 
+    }
+
+    struct RegisteredApInfo_s {
+        String chSsid_a
+        SecurityTypeEnum_s stSecurityTypeEnum
+    }
+
+    struct ConnectStatusInfo_s {
+      WiFiStaStatusEnum_s eStatus
+      Boolean blIsConnected
+      WiFiFreqEnum_s eFreq
+      SecurityTypeEnum_s stSecurityTypeEnum
+      Int32 swRssi
+      UInt8 ubSsidLen
+      String chSsid_a
+      UInt8 ubPasswordLen
+      String chPassword_a
+    } 
+}
+
+
+interface WiFiP2PMode {
+
+    version{ major 1 minor 2 }
+
+    method vdSwitchP2PModeOnWithDefaultConf {
+   
+      out {
+        P2PGoInfo_s stP2PGoInfo
+         } 
+      error ReturnEnum_s
+    }
+
+    method vdSwitchP2PModeOn {
+      
+      in{
+        P2PGoConfig_s stP2PGOConfig
+      }
+
+      out{
+        P2PGoInfo_s stP2PGoInfo  
+
+      }
+
+      error ReturnEnum_s
+    }
+
+    method vdSwitchP2PModeOff {
+
+      error ReturnEnum_s
+    }
+
+    method vdGetP2PConnectionStatus {
+      
+      out{
+        P2PConnectStatusInfo_s stP2PConnectStatusInfo
+      }
+
+      error ReturnEnum_s
+    }
+
+    broadcast P2PPinCode {
+        out {
+            String  chPinCode_a
+        }
+    }
+
+
+     enumeration ReturnEnum_s {
+      VSOMEIP_OK
+      VSOMEIP_ERR_WRONG_STATE
+      VSOMEIP_ERR_INVALID_ARGUMENT
+      VSOMEIP_ERR_WRONG_OPERATION
+      VSOMEIP_ERR_OTHER
+    }
+
+    enumeration SecurityTypeEnum_s {
+      OPEN 
+      WEP 
+      WPA2_PERSONAL
+      WPA2_ENTERPRISE
+      WPA3_PERSONAL
+      WPA3_ENTERPRISE
+    }
+
+    enumeration IpAddrTypeEnum_s {
+      STATIC
+      DHCP 
+    }
+
+    enumeration ConnectReturnEnum_s {
+      AP_CONNECT_OK
+      AP_CONNECT_WITHOUT_IP
+      AP_CONNECT_FAIL
+    }
+
+    enumeration WiFiFreqEnum_s {
+      FREQ_2_4 =2400,
+      FREQ_5_0 =5000,
+      FREQ_6_0 =6000
+    }
+
+    enumeration WiFiStaStatusEnum_s {
+      ON
+      OFF
+    }
+
+    struct P2PGoInfo_s  {
+       UInt8 ubSsidLen
+       String chSsid_a
+       UInt8 ubPasswordLen
+       String chPassword_a
+       UInt8 [] ubIpAddr_a
+       SecurityTypeEnum_s stSecurityTpeEnum
+    }
+
+    struct StaticIpAddrInfo_s {
+        UInt8 [] ubpv4Addr_a
+        UInt8 [] ubNetMask_a
+        UInt8 [] ubDefGateWay_a
+    }
+
+    struct DhcpServerConfig_s  {
+       UInt8 [] ubStartIP_a
+       UInt8 [] ubEndIP_a 
+       UInt64 udLeaseTime
+    }
+
+    struct P2PGoConfig_s {
+       String chSsid 
+       String chPassword_a
+       WiFiFreqEnum_s eFreq
+       StaticIpAddrInfo_s stIPInfo
+       DhcpServerConfig_s stDhcpServerConf
+    }
+
+    struct P2PConnectStatusInfo_s {
+       UInt16 uhP2PClientNum 
+       String [] chMacAddr_aa
+    }
+
+    
+
+}
